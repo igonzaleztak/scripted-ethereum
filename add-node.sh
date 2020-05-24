@@ -45,7 +45,7 @@ fi
 # Starting the node
 ipAddr=127.0.0.1
 
-geth --datadir $nodeName/  --syncmode full  --verbosity 3 --networkid $networkID --port $portBase  --nat=extip:$ipAddr --gasprice '0' --ws --wsport 33018 --wsaddr="127.0.0.1" --wsorigins "*" --bootnodes "$bootnodeAddr"
+geth --datadir $nodeName/  --syncmode full  --verbosity 3 --networkid $networkID --port $portBase  --nat=extip:$ipAddr --gasprice '0' --bootnodes "$bootnodeAddr"
 echo -e "#!/usr/bin/env bash\n" > $nodeName/init.sh
-echo -n "geth --datadir ./ --syncmode full --verbosity 3 --networkid $networkID --port $portBase --nat=extip:$ipAddr --gasprice '0' --ws --wsport 33018 --wsaddr='127.0.0.1' --wsorigins \"*\"  --bootnodes \"$bootnodeAddr\"" >> $nodeName/init.sh
+echo -n "geth --datadir ./ --syncmode full --verbosity 3 --networkid $networkID --port $portBase --nat=extip:$ipAddr --gasprice '0'  --bootnodes \"$bootnodeAddr\"" >> $nodeName/init.sh
 chmod a+x $nodeName/init.sh
