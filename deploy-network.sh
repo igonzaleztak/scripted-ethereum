@@ -19,7 +19,7 @@ rm -R setup 2>/dev/null
 rm -R setup/? 2>/dev/null
 rm -R node* 2>/dev/null
 rm alloc.txt 2>/dev/null
-
+rm genesis.json 2>/dev/null
 
 # Create the directories
 echo "Insert the passwords for the different users"
@@ -66,9 +66,12 @@ proposerSeal="000000000000000000000000000000000000000000000000000000000000000000
 # ExtraData field
 extraData='"extraData": "0x'$vanity$signers$proposerSeal'",'
 
-# Swaping the extraData field in the genesis.json
+# Swaping the extraData field in the default.json
 line='"extraData": "0x00000000000000000000000000000000000000000000000000000000000000002fe0aa42988ef1ac0da1040cd333ea3980b4be320000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",'
-sed -i "s/$line/$extraData/" genesis.json
+sed -i "s/$line/$extraData/" defaul.json
+
+# copy default.json to genesis.json
+cp default.json genesis.json
 
 # initialize all the nodes with the genesis block (genesis.json)
 i=0
@@ -83,7 +86,7 @@ mkdir bootnode
 bootnode --genkey=bootnode/boot.key
 
 # Initializing the bootnode
-nohup bootnode -nodekey bootnode/boot.key --nat=extip:127.0.0.1 -verbosity 9 -addr :30310 2>/dev/null 1>bootnode/enodeAddr.txt &
+nohup bootnode -nodekey bootnode/boot.key -verbosity 9 -addr :30310 2>/dev/null 1>bootnode/enodeAddr.txt &
 sleep 2
 
 # Getting the bootnode address
@@ -120,10 +123,10 @@ do
     echo $pass >  node$i/password.txt
     pass=" "
 
-    geth --datadir node$i/  --syncmode full --miner.etherbase "0x${addr[i]}" --nat=extip:$ipAddr --mine --minerthreads 1 --verbosity 3 --networkid $networkID --port $portBase --gasprice '0' --rpccorsdomain "*" --bootnodes "$bootnodeAddr" --unlock ${addr[i]} --password node$i/password.txt  2>node$i/errors.txt 1>node$i/log.txt &
+    geth --datadir node$i/  --syncmode full --miner.etherbase "0x${addr[i]}" --nat=extip:$ipAddr --mine --miner.threads  1 --verbosity 3 --networkid $networkID --port $portBase --gasprice '0' --rpccorsdomain "*" --bootnodes "$bootnodeAddr" --unlock ${addr[i]} --password node$i/password.txt  2>node$i/errors.txt 1>node$i/log.txt &
     
     echo -e "#!/usr/bin/env bash" > node$i/init.sh
-    echo -n "geth --datadir ./ --syncmode full --nat=extip:$ipAddr --mine --minerthreads 1 --verbosity 3 --networkid $networkID --port $portBase --gasprice '0' --rpccorsdomain \"*\" --bootnodes \"$bootnodeAddr\" --unlock ${addr[i]} --password password.txt" >> node$i/init.sh
+    echo -n "geth --datadir ./ --syncmode full --nat=extip:$ipAddr --mine --miner.threads 1 --verbosity 3 --networkid $networkID --port $portBase --gasprice '0' --rpccorsdomain \"*\" --bootnodes \"$bootnodeAddr\" --unlock ${addr[i]} --password password.txt" >> node$i/init.sh
     let i++
     let portBase++
     sleep 2
