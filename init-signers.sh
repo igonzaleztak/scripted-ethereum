@@ -2,7 +2,7 @@
 
 # Initializing the bootnode
 nohup bootnode -nodekey bootnode/boot.key -verbosity 9 -addr :30310 2>/dev/null 1>bootnode/enodeAddr.txt &
-sleep 2
+sleep 1
 
 # Initialising the nodes
 numNodes=2
